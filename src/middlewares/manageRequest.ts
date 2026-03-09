@@ -6,6 +6,16 @@ import logger from "@utils/functions/logger";
 import { deleteCacheFiles } from "./upload";
 
 import type { ResponseErrorsParams } from "@assets/config/errors";
+import logService from "@utils/services/log.service";
+
+interface CreateLogParams {
+    action: string;
+    entity: string;
+    entityID: string;
+    userID?: string;
+    data?: any;
+    additionalInfo?: any;
+}
 
 interface ManageErrorParams {
     code: ResponseErrorsParams;
@@ -15,6 +25,7 @@ interface ManageErrorParams {
 export interface ManageRequestBody {
     defaultExpress: { res: Response; req: Request };
     files: Express.Multer.File[];
+    createLog: (data: CreateLogParams) => Promise<any>;
     params: any;
     querys: any;
     data: any;
@@ -51,6 +62,19 @@ const manageRequest = (service: ManageRequestParams["service"], options?: Manage
             sendError({ code, error, res, local: service.name });
         };
 
+                const createLog = async ({ action, entity, entityID, userID, data, additionalInfo }: CreateLogParams) => {
+            return await logService.createLog({
+                action,
+                entity,
+                entityID,
+                userID,
+                data,
+                req,
+                additionalInfo
+            });
+        };
+
+
         try {
             const manageRequestBody: ManageRequestBody = {
                 defaultExpress: { res, req },
@@ -58,6 +82,7 @@ const manageRequest = (service: ManageRequestParams["service"], options?: Manage
                 querys: req.query as Record<string, unknown>,
                 data: req.body as Record<string, unknown>,
                 manageError,
+                createLog,
                 files,
                 ids: {
                     userID: res.locals?.userID,
