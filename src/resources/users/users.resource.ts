@@ -17,8 +17,7 @@ import userModel from "@database/model/user";
 import fileStorage from "@storage/file";
 
 import type { ManageRequestBody } from "@middlewares/manageRequest";
-
-type UserModelType = any;
+import type { UserModelType } from "@utils/types/models/user";
 
 const usersResource = {
     signUp: async ({ data, manageError, createLog }: ManageRequestBody) => {
