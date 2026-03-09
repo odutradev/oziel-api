@@ -3,22 +3,7 @@ interface ResponseError {
   message: string;
 }
 
-export type ResponseErrorsParams =
-  | "admin_access_denied"
-  | "author_invalid_cpf_rg"
-  | "control_access_denied"
-  | "internal_error"
-  | "invalid_credentials"
-  | "invalid_data"
-  | "invalid_params"
-  | "no_credentials_sent"
-  | "no_token"
-  | "token_is_not_valid"
-  | "user_already_exists"
-  | "user_not_found"
-  | "user_not_registered";
-
-export const ResponseErrors: Record<ResponseErrorsParams, ResponseError> = {
+export const ResponseErrors = {
   admin_access_denied: { message: "Sem permissão de administrador, acesso negado", statusCode: 401 },
   author_invalid_cpf_rg: { message: "CPF ou RG inválido em um ou mais autores", statusCode: 400 },
   control_access_denied: { message: "Acesso negado, sem token de segurança", statusCode: 401 },
@@ -32,4 +17,6 @@ export const ResponseErrors: Record<ResponseErrorsParams, ResponseError> = {
   user_already_exists: { message: "Usuário já existe", statusCode: 409 },
   user_not_found: { message: "Usuário não encontrado", statusCode: 404 },
   user_not_registered: { message: "Usuário não registrado", statusCode: 404 }
-};
+} satisfies Record<string, ResponseError>;
+
+export type ResponseErrorsParams = keyof typeof ResponseErrors;
