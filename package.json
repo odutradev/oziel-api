@@ -1,0 +1,57 @@
+{
+  "name": "ts-api-template",
+  "version": "1.0.0",
+  "description": "API responsavel por gerir dados da Cooperativa Oziel",
+  "main": "dist/server.js",
+  "type": "module",
+  "scripts": {
+    "control-access": "tsup src/utils/functions/controlAccess.ts --format esm && node dist/controlAccess.js",
+    "publish": "npx pub --bump-package --build --push --branch master",
+    "start": "node dist/server.js",
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/odutradev/typescript-api-template.git"
+  },
+  "author": "https://github.com/odutradev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/odutradev/typescript-api-template/issues"
+  },
+  "homepage": "https://github.com/odutradev/typescript-api-template#readme",
+  "devDependencies": {
+    "@types/chalk": "^0.4.31",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/marked": "^6.0.0",
+    "@types/morgan": "^1.9.9",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^22.13.9",
+    "@types/node-cron": "^3.0.11",
+    "@types/nodemailer": "^7.0.11",
+    "tsup": "^8.5.1",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "firebase-admin": "^13.7.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "marked": "^15.0.0",
+    "mongoose": "^8.8.3",
+    "morgan": "^1.10.1",
+    "multer": "^1.4.5-lts.1",
+    "node-cron": "^4.1.0",
+    "nodemailer": "^8.0.1",
+    "sharp": "^0.34.5"
+  },
+  "overrides": {
+    "tar": "^7.4.4"
+  }
+}
