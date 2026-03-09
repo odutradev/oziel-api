@@ -1,6 +1,6 @@
 {
-  "name": "ts-api-template",
-  "version": "1.0.1",
+  "name": "oziel-api",
+  "version": "1.0.2",
   "description": "API responsavel por gerir dados da Cooperativa Oziel",
   "main": "dist/server.js",
   "type": "module",
@@ -13,14 +13,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/odutradev/typescript-api-template.git"
+    "url": "git+ssh://git@github.com/odutradev/oziel-api.git"
   },
   "author": "https://github.com/odutradev",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/odutradev/typescript-api-template/issues"
+    "url": "https://github.com/odutradev/oziel-api/issues"
   },
-  "homepage": "https://github.com/odutradev/typescript-api-template#readme",
+  "homepage": "https://github.com/odutradev/oziel-api#readme",
   "devDependencies": {
     "@types/chalk": "^0.4.31",
     "@types/cors": "^2.8.17",

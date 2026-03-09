@@ -1,6 +1,6 @@
 const loggerConfig = {
     usePrefix: true,
-    prefix: '[Template TS API]',
+    prefix: '[Oziel API]',
     prefixColor: 'magenta',
     info: {
         prefix: '(info)',
