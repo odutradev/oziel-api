@@ -1,10 +1,8 @@
 import mongoose from "mongoose";
 
+import dateService from "@utils/services/date.service";
+
 const userSchema = new mongoose.Schema({
-    id: {
-        unique: true,
-        type: String
-    },
     order: Number,
     name: String,
     role: {
@@ -18,7 +16,7 @@ const userSchema = new mongoose.Schema({
         type: String,
     },
     createAt: {
-        default: Date.now(),
+        default: () => dateService.now(),
         type: Date,
     },
     lastUpdate: {
@@ -40,6 +38,10 @@ const userSchema = new mongoose.Schema({
         type: String
     },
     email: {
+        type: String,
+        unique: true
+    },
+    cpfOrRg: {
         type: String
     }
 });
