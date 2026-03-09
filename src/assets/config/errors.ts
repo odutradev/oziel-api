@@ -45,6 +45,7 @@ export type ResponseErrorsParams =
   | "access_denied"
   | "invalid_data" 
   | "no_data_sent" 
+  | "author_invalid_cpf_rg" 
   | "no_token";
   
 export const ResponseErrors: Record<ResponseErrorsParams, ResponseError> = {
@@ -55,6 +56,10 @@ export const ResponseErrors: Record<ResponseErrorsParams, ResponseError> = {
   no_execution_permission: {
     message: "Permissão negada para execução",
     statusCode: 403,
+  },
+  author_invalid_cpf_rg: {
+    message: "CPF ou RG inválido em um ou mais autores",
+    statusCode: 400,
   },
   internal_error: {
     message: "Erro no servidor",
