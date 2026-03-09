@@ -8,6 +8,7 @@ import passwordResetModel from "@database/model/passwordReset";
 import stringService from "@utils/services/string.services";
 import objectService from "@utils/services/object.service";
 import randomService from "@utils/services/random.service";
+import cryptoService from "@utils/services/crypto.service";
 import imageService from "@utils/services/image.service";
 import dateService from "@utils/services/date.service";
 import sendEmail from "@email/functions/sendEmail";
@@ -27,9 +28,8 @@ const usersResource = {
 
             const findUser = await userModel.findOne({ email });
             if (findUser) return manageError({ code: "user_already_exists" });
-
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash(password, salt);
+            
+            const hashedPassword = await cryptoService.hashPassword(password);
 
             const now = dateService.now();
 
@@ -56,18 +56,6 @@ const usersResource = {
                 }
             });
 
-            const template = welcomeTemplate();
-            await sendEmail({
-                to: createdUser.email as string,
-                subject: "Bem-vindo ao AMaisFacil",
-                template,
-                variables: {
-                    userName: createdUser.name || 'Usuário',
-                    email: createdUser.email as string,
-                    date: dateService.formatDate(now)
-                }
-            });
-
             const token = jwt.sign({ id: createdUser._id }, process.env.SECRET || "");
             return { token };		 
         } catch (error) {
@@ -84,7 +72,7 @@ const usersResource = {
             
             if (findUser.status !== "loggedIn") return manageError({ code: "user_not_registered" });
 
-            var isPasswordMatch = await bcrypt.compare(password, findUser?.password || "");
+            const isPasswordMatch = await cryptoService.comparePassword(password, findUser?.password || "");
             if (!isPasswordMatch) return manageError({ code: "invalid_credentials" });
 
             await createLog({
@@ -238,8 +226,7 @@ const usersResource = {
 
             if (!resetRequest) return manageError({ code: "invalid_data" });
 
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash(newPassword, salt);
+            const hashedPassword = await cryptoService.hashPassword(newPassword);
 
             await userModel.findByIdAndUpdate(
                 user._id,
@@ -340,10 +327,12 @@ const usersResource = {
             manageError({ code: "internal_error", error });
         }
     },
-    updateProfileImage: async ({ manageError, ids, file, createLog }: ManageRequestBody) => {
+    updateProfileImage: async ({ manageError, ids, files, createLog }: ManageRequestBody) => {
         try {
             const { userID } = ids;
             if (!userID) return manageError({ code: "invalid_params" });
+
+            const file = files[0];
 
             if (!file) return manageError({ code: "invalid_data" });
 
