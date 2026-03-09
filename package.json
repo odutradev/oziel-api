@@ -1,6 +1,6 @@
 {
   "name": "ts-api-template",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "API responsavel por gerir dados da Cooperativa Oziel",
   "main": "dist/server.js",
   "type": "module",
