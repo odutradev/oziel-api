@@ -1,12 +1,8 @@
+import treasuryService, { TRANSACTION_TYPES } from "@utils/services/treasury.service";
 import transactionModel from "@database/model/transaction";
 import dateService from "@utils/services/date.service";
 
 import type { ManageRequestBody } from "@middlewares/manageRequest";
-
-const TRANSACTION_TYPES = {
-    EXPENSE: "EXPENSE",
-    INCOME: "INCOME"
-} as const;
 
 const treasuryResource = {
     addTransaction: async ({ data, manageError, ids, createLog }: ManageRequestBody) => {
@@ -69,47 +65,22 @@ const treasuryResource = {
 
             if (isNaN(month) || isNaN(year)) return manageError({ code: "invalid_data" });
 
-            const startDate = new Date(year, month, 1);
-            const endDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
+            try {
+                const { finalBalance, carryOverTransaction } = await treasuryService.processMonthClose(month, year, ids.userID);
 
-            const transactions = await transactionModel.find({
-                referenceDate: { $gte: startDate, $lte: endDate }
-            });
+                await createLog({
+                    action: "system_action",
+                    entity: "system",
+                    entityID: carryOverTransaction._id.toString(),
+                    userID: ids.userID,
+                    data: { description: "Month closed manually", finalBalance }
+                });
 
-            const finalBalance = transactions.reduce((acc, curr) => {
-                return curr.type === TRANSACTION_TYPES.INCOME ? acc + curr.amount : acc - curr.amount;
-            }, 0);
-
-            const nextMonthDate = new Date(year, month + 1, 1, 12, 0, 0);
-
-            const existingCarryOver = await transactionModel.findOne({
-                isCarryOver: true,
-                referenceDate: {
-                    $gte: new Date(year, month + 1, 1),
-                    $lte: new Date(year, month + 1, 1, 23, 59, 59, 999)
-                }
-            });
-
-            if (existingCarryOver) return manageError({ code: "invalid_data" });
-
-            const carryOverTransaction = await transactionModel.create({
-                type: finalBalance >= 0 ? TRANSACTION_TYPES.INCOME : TRANSACTION_TYPES.EXPENSE,
-                description: `Saldo transportado (${month + 1}/${year})`,
-                amount: Math.abs(finalBalance),
-                referenceDate: nextMonthDate,
-                userID: ids.userID,
-                isCarryOver: true
-            });
-
-            await createLog({
-                action: "system_action",
-                entity: "system",
-                entityID: carryOverTransaction._id.toString(),
-                userID: ids.userID,
-                data: { description: "Month closed", finalBalance }
-            });
-
-            return { success: true, carryOverTransaction };
+                return { success: true, carryOverTransaction };
+            } catch (err: any) {
+                if (err.message === "carry_over_already_exists") return manageError({ code: "invalid_data" });
+                return manageError({ code: "internal_error", error: err });
+            }
         } catch (error) {
             return manageError({ code: "internal_error", error });
         }
