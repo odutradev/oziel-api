@@ -1,101 +1,85 @@
-import mongoose from "mongoose";
-
+import { TRANSACTION_STATUS, TRANSACTION_TYPES } from "@utils/constants/treasury";
 import transactionModel from "@database/model/transaction";
-import treasuryService from "@utils/services/treasury.service";
+import dateService from "@utils/services/date.service";
 
+import type { TransactionModelType } from "@utils/types/models/transaction";
 import type { ManageRequestBody } from "@middlewares/manageRequest";
 
-const TRANSACTION_INCOME = "INCOME";
+const createTransaction = async ({ data, createLog, ids, manageError }: ManageRequestBody) => {
+    const payload = data as Partial<TransactionModelType>;
+    if (!payload.title || !payload.amount || !payload.type || !payload.date) return manageError({ code: "invalid_params" as never });
+
+    const transaction = await transactionModel.create({ ...payload, status: payload.status ?? TRANSACTION_STATUS.PENDING });
+    await createLog({ action: "system_action", entity: "system", entityID: transaction._id.toString(), userID: ids.userID, data: { description: "Transaction created", transaction } });
+
+    return transaction;
+};
+
+const updateTransaction = async ({ params, data, createLog, ids, manageError }: ManageRequestBody) => {
+    const transactionID = params?.transactionID as string;
+    if (!transactionID) return manageError({ code: "invalid_params" as never });
+
+    const payload = data as Partial<TransactionModelType>;
+    const updatedTransaction = await transactionModel.findByIdAndUpdate(transactionID, { ...payload, updatedAt: dateService.now() }, { new: true });
+    if (!updatedTransaction) return manageError({ code: "data_not_found" as never });
+
+    await createLog({ action: "system_action", entity: "system", entityID: transactionID, userID: ids.userID, data: { description: "Transaction updated", data } });
+
+    return updatedTransaction;
+};
+
+const deleteTransaction = async ({ params, createLog, ids, manageError }: ManageRequestBody) => {
+    const transactionID = params?.transactionID as string;
+    if (!transactionID) return manageError({ code: "invalid_params" as never });
+
+    const deletedTransaction = await transactionModel.findByIdAndDelete(transactionID);
+    if (!deletedTransaction) return manageError({ code: "data_not_found" as never });
+
+    await createLog({ action: "system_action", entity: "system", entityID: transactionID, userID: ids.userID, data: { description: "Transaction deleted" } });
+
+    return { success: true };
+};
+
+const confirmTransaction = async ({ params, createLog, ids, manageError }: ManageRequestBody) => {
+    const transactionID = params?.transactionID as string;
+    if (!transactionID) return manageError({ code: "invalid_params" as never });
+
+    const confirmedTransaction = await transactionModel.findByIdAndUpdate(transactionID, { status: TRANSACTION_STATUS.CONFIRMED, updatedAt: dateService.now() }, { new: true });
+    if (!confirmedTransaction) return manageError({ code: "data_not_found" as never });
+
+    await createLog({ action: "system_action", entity: "system", entityID: transactionID, userID: ids.userID, data: { description: "Transaction confirmed" } });
+
+    return confirmedTransaction;
+};
+
+const getMonthlyDashboard = async ({ querys, manageError }: ManageRequestBody) => {
+    const year = Number(querys?.year);
+    const month = Number(querys?.month);
+    if (!year || !month) return manageError({ code: "invalid_params" as never });
+
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+
+    const [aggBalance, monthTransactions] = await Promise.all([
+        transactionModel.aggregate([{ $match: { status: TRANSACTION_STATUS.CONFIRMED } }, { $group: { _id: "$type", total: { $sum: "$amount" } } }]),
+        transactionModel.find({ date: { $gte: startDate, $lte: endDate } }).sort({ date: -1 }).lean()
+    ]);
+
+    const currentBalance = (aggBalance.find(a => a._id === TRANSACTION_TYPES.INCOME)?.total ?? 0) - (aggBalance.find(a => a._id === TRANSACTION_TYPES.EXPENSE)?.total ?? 0);
+    const income = monthTransactions.filter(t => t.type === TRANSACTION_TYPES.INCOME && t.status === TRANSACTION_STATUS.CONFIRMED).reduce((acc, curr) => acc + curr.amount, 0);
+    const expense = monthTransactions.filter(t => t.type === TRANSACTION_TYPES.EXPENSE && t.status === TRANSACTION_STATUS.CONFIRMED).reduce((acc, curr) => acc + curr.amount, 0);
+    const pendingIncome = monthTransactions.filter(t => t.type === TRANSACTION_TYPES.INCOME && t.status === TRANSACTION_STATUS.PENDING).reduce((acc, curr) => acc + curr.amount, 0);
+    const pendingExpense = monthTransactions.filter(t => t.type === TRANSACTION_TYPES.EXPENSE && t.status === TRANSACTION_STATUS.PENDING).reduce((acc, curr) => acc + curr.amount, 0);
+
+    return { currentBalance, monthlyMetrics: { income, expense, pendingIncome, pendingExpense, balance: income - expense }, transactions: monthTransactions };
+};
 
 const treasuryResource = {
-    addTransaction: async ({ data, manageError, ids, createLog }: ManageRequestBody) => {
-        try {
-            const { description, amount, type, referenceDate } = data;
-            if (!description || !amount || !type) return manageError({ code: "invalid_data" });
-
-            const validDate = referenceDate ? new Date(String(referenceDate)) : new Date();
-            const absoluteAmount = Math.abs(Number(amount));
-
-            const transaction = await transactionModel.create({
-                userID: new mongoose.Types.ObjectId(String(ids.userID)),
-                referenceDate: validDate,
-                amount: absoluteAmount,
-                description,
-                type
-            });
-
-            await createLog({
-                action: "system_action",
-                entity: "system",
-                entityID: String(transaction._id),
-                userID: ids.userID,
-                data: { description: "Transação criada", type, amount }
-            });
-
-            return transaction;
-        } catch (error) {
-            return manageError({ code: "internal_error", error });
-        }
-    },
-    getMonthlySummary: async ({ querys, manageError, ids }: ManageRequestBody) => {
-        try {
-            const currentDate = new Date();
-            const targetYear = querys.year ? Number(querys.year) : currentDate.getFullYear();
-            const targetMonth = querys.month ? Number(querys.month) : (currentDate.getMonth() + 1);
-
-            const jsTargetMonth = targetMonth - 1;
-            const startOfMonth = new Date(targetYear, jsTargetMonth, 1, 0, 0, 0, 0);
-            const endOfMonth = new Date(targetYear, jsTargetMonth + 1, 0, 23, 59, 59, 999);
-
-            const transactions = await transactionModel.find({
-                userID: new mongoose.Types.ObjectId(String(ids.userID)),
-                referenceDate: { $gte: startOfMonth, $lte: endOfMonth }
-            }).sort({ referenceDate: -1 });
-
-            const summary = transactions.reduce((acc, curr) => {
-                const isIncome = curr.type === TRANSACTION_INCOME;
-                const amount = Number(curr.amount);
-
-                return {
-                    income: isIncome ? acc.income + amount : acc.income,
-                    expense: !isIncome ? acc.expense + amount : acc.expense,
-                    balance: isIncome ? acc.balance + amount : acc.balance - amount,
-                };
-            }, { income: 0, expense: 0, balance: 0 });
-
-            return { ...summary, transactions };
-        } catch (error) {
-            return manageError({ code: "internal_error", error });
-        }
-    },
-    closeMonth: async ({ data, manageError, ids, createLog }: ManageRequestBody) => {
-        try {
-            const targetMonth = Number(data.month);
-            const targetYear = Number(data.year);
-
-            if (isNaN(targetMonth) || isNaN(targetYear)) return manageError({ code: "invalid_data" });
-
-            try {
-                const { finalBalance, carryOverTransaction } = await treasuryService.processMonthClose(targetMonth, targetYear, String(ids.userID));
-
-                await createLog({
-                    action: "system_action",
-                    entity: "system",
-                    entityID: String(carryOverTransaction._id),
-                    userID: ids.userID,
-                    data: { description: "Mês fechado manualmente", finalBalance }
-                });
-
-                return { success: true, carryOverTransaction };
-            } catch (err: unknown) {
-                const isKnownError = err instanceof Error && err.message === "carry_over_already_exists";
-                if (isKnownError) return manageError({ code: "invalid_data" });
-                return manageError({ code: "internal_error", error: err });
-            }
-        } catch (error) {
-            return manageError({ code: "internal_error", error });
-        }
-    }
+    createTransaction,
+    updateTransaction,
+    deleteTransaction,
+    confirmTransaction,
+    getMonthlyDashboard
 };
 
 export default treasuryResource;

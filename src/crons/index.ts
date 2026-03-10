@@ -3,13 +3,11 @@ import * as cron from "node-cron";
 import defaultConfig from "@assets/config/default";
 import logger from "@utils/functions/logger";
 
-import treasuryMonthlyCloseTask from "./resources/treasuryMonthlyClose";
 import cronExecuter from "./resources/cronExecuter";
 
 import type { CronTask } from "@utils/types/crons";
 
 const cronTasks: CronTask[] = [
-    treasuryMonthlyCloseTask,
     cronExecuter,
 ];
 

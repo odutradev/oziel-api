@@ -7,8 +7,10 @@ import auth from "@middlewares/auth";
 
 const treasuryRouter = Router();
 
-treasuryRouter.get("/summary", [auth, hasRole([])], manageRequest(treasuryResource.getMonthlySummary));
-treasuryRouter.post("/transaction", [auth, hasRole([])], manageRequest(treasuryResource.addTransaction));
-treasuryRouter.post("/close-month", [auth, hasRole([])], manageRequest(treasuryResource.closeMonth));
+treasuryRouter.patch("/:transactionID/confirm", [auth, hasRole(["admin"])], manageRequest(treasuryResource.confirmTransaction));
+treasuryRouter.delete("/:transactionID", [auth, hasRole(["admin"])], manageRequest(treasuryResource.deleteTransaction));
+treasuryRouter.patch("/:transactionID", [auth, hasRole(["admin"])], manageRequest(treasuryResource.updateTransaction));
+treasuryRouter.get("/dashboard", [auth, hasRole(["admin", "normal"])], manageRequest(treasuryResource.getMonthlyDashboard));
+treasuryRouter.post("/", [auth, hasRole(["admin"])], manageRequest(treasuryResource.createTransaction));
 
 export default treasuryRouter;

@@ -1,0 +1,752 @@
+{
+	"info": {
+		"_postman_id": "d132b1d5-89f7-43f1-9697-39126215c449",
+		"name": "oziel-api-1.0.7-docs",
+		"description": "Automated Postman documentation for Oziel API v1.0.7",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "System Health",
+			"item": [
+				{
+					"name": "Ping",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/ping",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"ping"
+							]
+						},
+						"description": "Checks if the API is running."
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Control Access",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "controlAccess",
+								"value": "{{controlAccessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/validate/control-access",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"validate",
+								"control-access"
+							]
+						},
+						"description": "Validates the provided control access token."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Sign Up",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "controlAccess",
+										"value": "{{controlAccessToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Joao Vitor\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/users/signup",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Sign In",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    var jsonData = pm.response.json();",
+											"    if (jsonData.token) {",
+											"        pm.environment.set(\"authorization\", jsonData.token);",
+											"        console.log(\"Authorization token automatically updated in environment.\");",
+											"    }",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "controlAccess",
+										"value": "{{controlAccessToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/users/signin",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"users",
+										"signin"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Password Reset",
+					"item": [
+						{
+							"name": "Request Reset",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "controlAccess",
+										"value": "{{controlAccessToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"{{email}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/users/password/reset/request",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"users",
+										"password",
+										"reset",
+										"request"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify Code",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "controlAccess",
+										"value": "{{controlAccessToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"{{email}}\",\n  \"code\": \"{{resetCode}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/users/password/reset/verify",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"users",
+										"password",
+										"reset",
+										"verify"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Confirm Reset",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "controlAccess",
+										"value": "{{controlAccessToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"{{email}}\",\n  \"code\": \"{{resetCode}}\",\n  \"newPassword\": \"{{password}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/users/password/reset/confirm",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"users",
+										"password",
+										"reset",
+										"confirm"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Profile",
+					"item": [
+						{
+							"name": "Get My Profile",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "controlAccess",
+										"value": "{{controlAccessToken}}",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{authorization}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/users/me",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"users",
+										"me"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Profile",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "controlAccess",
+										"value": "{{controlAccessToken}}",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Joao Vitor Updated\",\n  \"description\": \"Senior Fullstack Developer\",\n  \"cpfOrRg\": \"12345678901\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/users/profile",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"users",
+										"profile"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Profile Image",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "controlAccess",
+										"value": "{{controlAccessToken}}",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "image",
+											"type": "file",
+											"src": []
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURL}}/users/profile/image",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"users",
+										"profile",
+										"image"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Management",
+					"item": [
+						{
+							"name": "Get All Users",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    var jsonData = pm.response.json();",
+											"    if (jsonData.data && jsonData.data.length > 0) {",
+											"        pm.environment.set(\"userID\", jsonData.data[0]._id);",
+											"        console.log(\"First userID saved to environment automatically.\");",
+											"    }",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "controlAccess",
+										"value": "{{controlAccessToken}}",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{authorization}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/users/all?page=1&limit=10&returnType=full",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"users",
+										"all"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "returnType",
+											"value": "full",
+											"description": "'full' or 'minimum'"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User by ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "controlAccess",
+										"value": "{{controlAccessToken}}",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{authorization}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/users/{{userID}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"users",
+										"{{userID}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update User by ID",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "controlAccess",
+										"value": "{{controlAccessToken}}",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Updated Name\",\n  \"status\": \"registered\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/users/{{userID}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"users",
+										"{{userID}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete User by ID",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "controlAccess",
+										"value": "{{controlAccessToken}}",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{authorization}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/users/{{userID}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"users",
+										"{{userID}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Treasury",
+			"item": [
+				{
+					"name": "Dashboard",
+					"item": [
+						{
+							"name": "Get Monthly Dashboard",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "controlAccess",
+										"value": "{{controlAccessToken}}",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{authorization}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/treasury/dashboard?year=2026&month=3",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"treasury",
+										"dashboard"
+									],
+									"query": [
+										{
+											"key": "year",
+											"value": "2026"
+										},
+										{
+											"key": "month",
+											"value": "3"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Transactions",
+					"item": [
+						{
+							"name": "Create Transaction",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    var jsonData = pm.response.json();",
+											"    if (jsonData._id) {",
+											"        pm.environment.set(\"transactionID\", jsonData._id);",
+											"        console.log(\"transactionID saved to environment.\");",
+											"    }",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "controlAccess",
+										"value": "{{controlAccessToken}}",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"title\": \"API Payment\",\n  \"amount\": 1500.50,\n  \"type\": \"INCOME\",\n  \"date\": \"2026-03-10T12:00:00.000Z\",\n  \"category\": \"Services\",\n  \"description\": \"Payment for API integration\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/treasury",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"treasury"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Transaction",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "controlAccess",
+										"value": "{{controlAccessToken}}",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"amount\": 2000.00,\n  \"description\": \"Updated transaction description\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/treasury/{{transactionID}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"treasury",
+										"{{transactionID}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Confirm Transaction",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "controlAccess",
+										"value": "{{controlAccessToken}}",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{authorization}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/treasury/{{transactionID}}/confirm",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"treasury",
+										"{{transactionID}}",
+										"confirm"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Transaction",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "controlAccess",
+										"value": "{{controlAccessToken}}",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{authorization}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/treasury/{{transactionID}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"treasury",
+										"{{transactionID}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}
