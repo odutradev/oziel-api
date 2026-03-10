@@ -20,9 +20,9 @@ usersRouter.patch("/profile", [auth], manageRequest(usersResource.updateProfile)
 usersRouter.patch("/profile/image", [auth, upload.single("image")], manageRequest(usersResource.updateProfileImage, { upload: true }));
 usersRouter.get("/me", [auth], manageRequest(usersResource.getUser));
 
-usersRouter.get("/all", [auth, hasRole([ROLES.DIRETOR_PRESIDENTE])], manageRequest(usersResource.getAllUsers));
-usersRouter.delete("/:userID", [auth, hasRole([ROLES.DIRETOR_PRESIDENTE])], manageRequest(usersResource.deleteUserById));
-usersRouter.patch("/:userID", [auth, hasRole([ROLES.DIRETOR_PRESIDENTE])], manageRequest(usersResource.updateUserById));
-usersRouter.get("/:userID", [auth, hasRole([ROLES.DIRETOR_PRESIDENTE])], manageRequest(usersResource.getUserById));
+usersRouter.get("/all", [auth, hasRole([])], manageRequest(usersResource.getAllUsers));
+usersRouter.delete("/:userID", [auth, hasRole([])], manageRequest(usersResource.deleteUserById));
+usersRouter.patch("/:userID", [auth, hasRole([])], manageRequest(usersResource.updateUserById));
+usersRouter.get("/:userID", [auth, hasRole([])], manageRequest(usersResource.getUserById));
 
 export default usersRouter;
