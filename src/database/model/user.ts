@@ -1,36 +1,29 @@
 import mongoose from "mongoose";
 
+import { ROLES_ARRAY, ROLES } from "@utils/constants/roles";
 import dateService from "@utils/services/date.service";
 
 const userSchema = new mongoose.Schema({
     order: Number,
     name: String,
     role: {
-        enum: ["normal", "admin"],
-        default: "normal",
         type: String,
+        enum: ROLES_ARRAY,
+        default: ROLES.NORMAL,
     },
     status: {
+        type: String,
         enum: ["loggedIn", "registered", "blocked"],
         default: "registered",
-        type: String,
     },
     createAt: {
+        type: Date,
         default: () => dateService.now(),
-        type: Date,
     },
-    lastUpdate: {
-        type: Date,
-    },
-    firstSignup: {
-        type: Date,
-    },
-    lastGetUser: {
-        type: Date,
-    },
-    description: {
-        type: String
-    },
+    lastUpdate: Date,
+    firstSignup: Date,
+    lastGetUser: Date,
+    description: String,
     images: {
         profile: String
     },
