@@ -1,19 +1,20 @@
 import * as cron from "node-cron";
 
+import processRecurringTransactions from "./resources/processRecurringTransactions";
+import cronExecuter from "./resources/cronExecuter";
 import defaultConfig from "@assets/config/default";
 import logger from "@utils/functions/logger";
-
-import cronExecuter from "./resources/cronExecuter";
 
 import type { CronTask } from "@utils/types/crons";
 
 const cronTasks: CronTask[] = [
+    processRecurringTransactions,
     cronExecuter,
 ];
 
 const cronManager = {
     tasks: new Map<string, cron.ScheduledTask>(),
-    taskStatus: new Map<string, boolean>(), 
+    taskStatus: new Map<string, boolean>(),
 
     scheduleTask: ({ name, schedule, enabled, task }: CronTask) => {
         if (!enabled) {
@@ -30,7 +31,7 @@ const cronManager = {
                     logger.info(`Starting cron task: ${name}`);
                 }
                 cronManager.taskStatus.set(name, true);
-                
+
                 try {
                     await task();
                     const duration = Date.now() - startTime;
@@ -127,7 +128,7 @@ const cronManager = {
     getTaskInfo: (taskName: string) => {
         const task = cronManager.tasks.get(taskName);
         const taskConfig = cronTasks.find(t => t.name === taskName);
-        
+
         if (task && taskConfig) {
             return {
                 name: taskConfig.name,
