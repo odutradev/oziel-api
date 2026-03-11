@@ -1,7 +1,9 @@
+import { TRANSACTION_TYPES, TRANSACTION_STATUS } from "@utils/constants/treasury";
 import vaultTransactionModel from "@database/model/vaultTransaction";
 import { VAULT_TRANSACTION_TYPES } from "@utils/constants/vault";
-import vaultModel from "@database/model/vault";
+import transactionModel from "@database/model/transaction";
 import dateService from "@utils/services/date.service";
+import vaultModel from "@database/model/vault";
 
 import type { VaultTransactionModelType } from "@utils/types/models/vaultTransaction";
 import type { ManageRequestBody } from "@middlewares/manageRequest";
@@ -73,20 +75,32 @@ const processTransaction = async ({ params, data, createLog, ids, manageError }:
     const vault = await vaultModel.findById(vaultID);
     if (!vault) return manageError({ code: "data_not_found" as never });
 
-    if (payload.type === VAULT_TRANSACTION_TYPES.WITHDRAWAL && vault.balance < payload.amount) {
-        return manageError({ code: "invalid_data" as never });
-    }
-
-    const transaction = await vaultTransactionModel.create({
-        vaultID,
-        amount: payload.amount,
-        type: payload.type,
-        description: payload.description,
-        date: dateService.now()
-    });
+    if (payload.type === VAULT_TRANSACTION_TYPES.WITHDRAWAL && vault.balance < payload.amount) return manageError({ code: "invalid_data" as never });
 
     const balanceChange = payload.type === VAULT_TRANSACTION_TYPES.DEPOSIT ? payload.amount : -payload.amount;
-    await vaultModel.findByIdAndUpdate(vaultID, { $inc: { balance: balanceChange }, updatedAt: dateService.now() });
+    const treasuryTransactionType = payload.type === VAULT_TRANSACTION_TYPES.DEPOSIT ? TRANSACTION_TYPES.EXPENSE : TRANSACTION_TYPES.INCOME;
+    const treasuryTitle = payload.type === VAULT_TRANSACTION_TYPES.DEPOSIT ? `Depósito: ${vault.name}` : `Resgate: ${vault.name}`;
+    const transactionDate = dateService.now();
+
+    const [transaction] = await Promise.all([
+        vaultTransactionModel.create({
+            vaultID,
+            amount: payload.amount,
+            type: payload.type,
+            description: payload.description,
+            date: transactionDate
+        }),
+        vaultModel.findByIdAndUpdate(vaultID, { $inc: { balance: balanceChange }, updatedAt: transactionDate }),
+        transactionModel.create({
+            title: treasuryTitle,
+            amount: payload.amount,
+            type: treasuryTransactionType,
+            status: TRANSACTION_STATUS.CONFIRMED,
+            date: transactionDate,
+            description: payload.description || `Transação da caixinha ${vault.name}`,
+            category: "Caixinha"
+        })
+    ]);
 
     await createLog({ action: "system_action", entity: "system", entityID: vaultID, userID: ids.userID, data: { description: "Vault transaction processed", transaction } });
 
