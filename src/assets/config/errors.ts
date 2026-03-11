@@ -16,6 +16,7 @@ export const ResponseErrors = {
   token_is_not_valid: { message: "Token inválido", statusCode: 401 },
   user_already_exists: { message: "Usuário já existe", statusCode: 409 },
   user_not_found: { message: "Usuário não encontrado", statusCode: 404 },
+  template_not_found: { message: "Template não encontrado", statusCode: 404 },
   user_not_registered: { message: "Usuário não registrado", statusCode: 404 }
 } satisfies Record<string, ResponseError>;
 
