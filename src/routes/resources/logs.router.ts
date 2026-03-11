@@ -4,7 +4,6 @@ import { Router } from "express";
 import logsResource from "@resources/logs/logs.resource";
 import manageRequest from "@middlewares/manageRequest";
 import hasRole from "@middlewares/hasRole";
-import auth from "@middlewares/auth";
 
 const logsRouter = Router();
 

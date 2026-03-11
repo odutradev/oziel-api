@@ -2,7 +2,6 @@ import { Router } from "express";
 
 import usersResource from "@resources/users/users.resource";
 import manageRequest from "@middlewares/manageRequest";
-import { ROLES } from "@utils/constants/roles";
 import hasRole from "@middlewares/hasRole";
 import upload from "@middlewares/upload";
 import auth from "@middlewares/auth";
