@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import { VAULT_TRANSACTION_TYPES_ARRAY } from "@utils/constants/vault";
+import { VAULT_TRANSACTION_TYPES_ARRAY } from "@utils/types/models/vaultTransaction";
 import dateService from "@utils/services/date.service";
 
 const vaultTransactionSchema = new mongoose.Schema({

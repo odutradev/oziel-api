@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import { ROLES_ARRAY, ROLES } from "@utils/constants/roles";
+import { ROLES, ROLES_ARRAY, USER_STATUS_ARRAY, USER_STATUS } from "@utils/types/models/user";
 import dateService from "@utils/services/date.service";
 
 const userSchema = new mongoose.Schema({
@@ -13,8 +13,8 @@ const userSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["loggedIn", "registered", "blocked"],
-        default: "registered",
+        enum: USER_STATUS_ARRAY,
+        default: USER_STATUS.REGISTERED,
     },
     createAt: {
         type: Date,

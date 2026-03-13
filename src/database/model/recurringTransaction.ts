@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
-import { TRANSACTION_TYPES_ARRAY, RECURRING_FREQUENCIES_ARRAY } from "@utils/constants/treasury";
+import { RECURRING_FREQUENCIES_ARRAY } from "@utils/types/models/recurringTransaction";
+import { TRANSACTION_TYPES_ARRAY } from "@utils/types/models/transaction";
 import dateService from "@utils/services/date.service";
 
 const recurringTransactionSchema = new mongoose.Schema({

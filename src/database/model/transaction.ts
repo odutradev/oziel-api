@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import { TRANSACTION_STATUS_ARRAY, TRANSACTION_TYPES_ARRAY, TRANSACTION_STATUS } from "@utils/constants/treasury";
+import { TRANSACTION_STATUS_ARRAY, TRANSACTION_TYPES_ARRAY, TRANSACTION_STATUS } from "@utils/types/models/transaction";
 import dateService from "@utils/services/date.service";
 
 const transactionSchema = new mongoose.Schema({
