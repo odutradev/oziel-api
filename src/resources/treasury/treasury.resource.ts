@@ -1,4 +1,4 @@
-import { TRANSACTION_STATUS, TRANSACTION_TYPES } from "@utils/constants/treasury";
+import { TRANSACTION_STATUS, TRANSACTION_TYPES } from "@utils/types/models/transaction";
 import transactionModel from "@database/model/transaction";
 import dateService from "@utils/services/date.service";
 

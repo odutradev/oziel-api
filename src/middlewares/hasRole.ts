@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 
-import { SUPER_ROLES } from "@utils/constants/roles";
+import { SUPER_ROLES } from "@utils/types/models/user";
 import sendError from "@utils/functions/error";
 import userModel from "@database/model/user";
 import logger from "@utils/functions/logger";
 
-import type { RoleType } from "@utils/constants/roles";
+import type { RoleType } from "@utils/types/models/user";
 
 const hasRole = (allowedRoles: RoleType[]) => async (req: Request, res: Response, next: NextFunction): Promise<void> => {  
     try {

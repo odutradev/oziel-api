@@ -1,6 +1,6 @@
-import { TRANSACTION_TYPES, TRANSACTION_STATUS } from "@utils/constants/treasury";
+import { TRANSACTION_STATUS, TRANSACTION_TYPES } from "@utils/types/models/transaction";
+import { VAULT_TRANSACTION_TYPES } from "@utils/types/models/vaultTransaction";
 import vaultTransactionModel from "@database/model/vaultTransaction";
-import { VAULT_TRANSACTION_TYPES } from "@utils/constants/vault";
 import transactionModel from "@database/model/transaction";
 import dateService from "@utils/services/date.service";
 import vaultModel from "@database/model/vault";
