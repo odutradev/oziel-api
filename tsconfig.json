@@ -4,6 +4,7 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "ignoreDeprecations": "6.0",
     "allowSyntheticDefaultImports": true,
     "rootDir": "./src",
     "outDir": "./dist",
