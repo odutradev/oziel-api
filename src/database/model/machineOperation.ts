@@ -4,14 +4,16 @@ import dateService from "@utils/services/date.service";
 
 const machineOperationSchema = new mongoose.Schema({
     fleet: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "fleet",
         required: true,
-        description: "Identificacao da frota ou maquina utilizada no servico"
+        description: "Referência à frota utilizada"
     },
     operator: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "operator",
         required: true,
-        description: "Nome do operador responsavel pela maquina"
+        description: "Referência ao operador responsável"
     },
     serviceDescription: {
         type: String,
@@ -88,9 +90,9 @@ const machineOperationSchema = new mongoose.Schema({
 });
 
 machineOperationSchema.index({ operationDate: -1 });
-machineOperationSchema.index({ fleet: 1 });
 machineOperationSchema.index({ operator: 1 });
 machineOperationSchema.index({ status: 1 });
+machineOperationSchema.index({ fleet: 1 });
 
 const machineOperationModel = mongoose.model("machineOperation", machineOperationSchema);
 

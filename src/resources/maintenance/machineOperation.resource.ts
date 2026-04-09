@@ -61,7 +61,7 @@ const machineOperationResource = {
 
         const skip = (pageNum - 1) * limitNum;
         const [data, total] = await Promise.all([
-            machineOperationModel.find().sort({ operationDate: -1 }).skip(skip).limit(limitNum).lean(),
+            machineOperationModel.find().sort({ operationDate: -1 }).skip(skip).limit(limitNum).populate("fleet").populate("operator").lean(),
             machineOperationModel.countDocuments()
         ]);
 
@@ -85,7 +85,7 @@ const machineOperationResource = {
         const operationID = params?.id as string;
         if (!operationID) return manageError({ code: "invalid_params" as never });
 
-        const operation = await machineOperationModel.findById(operationID).lean();
+        const operation = await machineOperationModel.findById(operationID).populate("fleet").populate("operator").lean();
         if (!operation) return manageError({ code: "data_not_found" as never });
 
         return operation;
