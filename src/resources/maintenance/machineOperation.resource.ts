@@ -6,14 +6,16 @@ import type { ManageRequestBody } from "@middlewares/manageRequest";
 
 const machineOperationResource = {
     createOperation: async ({ data, createLog, ids, manageError }: ManageRequestBody) => {
-        const payload = data as Partial<MachineOperationModelType>;
-        if (!payload.fleet || !payload.operator || !payload.operationDate || !payload.hourlyRate) return manageError({ code: "invalid_params" as never });
+        const payload = data as Partial<MachineOperationModelType> & { description?: string };
+        const serviceDescription = (payload.serviceDescription || payload.description)?.trim();
+        
+        if (!payload.fleet || !payload.operator || !payload.operationDate || typeof payload.hourlyRate !== "number" || !serviceDescription) return manageError({ code: "invalid_params" as never });
 
-        const totalHours = (payload.hourMeterArrival ?? 0) - (payload.hourMeterDeparture ?? 0);
-        const workedHours = (payload.hourMeterServiceEnd ?? 0) - (payload.hourMeterServiceStart ?? 0);
+        const totalHours = Number(((payload.hourMeterArrival ?? 0) - (payload.hourMeterDeparture ?? 0)).toFixed(1));
+        const workedHours = Number(((payload.hourMeterServiceEnd ?? 0) - (payload.hourMeterServiceStart ?? 0)).toFixed(1));
         const totalValue = workedHours * payload.hourlyRate;
 
-        const operation = await machineOperationModel.create({ ...payload, totalHours, workedHours, totalValue });
+        const operation = await machineOperationModel.create({ ...payload, serviceDescription, totalHours, workedHours, totalValue });
         await createLog({ action: "system_action", entity: "system", entityID: operation._id.toString(), userID: ids.userID, data: { description: "Machine operation created", operation } });
 
         return operation;
@@ -22,21 +24,22 @@ const machineOperationResource = {
         const operationID = params?.id as string;
         if (!operationID) return manageError({ code: "invalid_params" as never });
 
-        const payload = data as Partial<MachineOperationModelType>;
+        const payload = data as Partial<MachineOperationModelType> & { description?: string };
         const existingOperation = await machineOperationModel.findById(operationID);
         if (!existingOperation) return manageError({ code: "data_not_found" as never });
 
+        const serviceDescription = (payload.serviceDescription || payload.description || existingOperation.serviceDescription)?.trim();
         const hourlyRate = payload.hourlyRate ?? existingOperation.hourlyRate;
         const hourMeterArrival = payload.hourMeterArrival ?? existingOperation.hourMeterArrival;
         const hourMeterDeparture = payload.hourMeterDeparture ?? existingOperation.hourMeterDeparture;
         const hourMeterServiceEnd = payload.hourMeterServiceEnd ?? existingOperation.hourMeterServiceEnd;
         const hourMeterServiceStart = payload.hourMeterServiceStart ?? existingOperation.hourMeterServiceStart;
 
-        const totalHours = hourMeterArrival - hourMeterDeparture;
-        const workedHours = hourMeterServiceEnd - hourMeterServiceStart;
+        const totalHours = Number((hourMeterArrival - hourMeterDeparture).toFixed(1));
+        const workedHours = Number((hourMeterServiceEnd - hourMeterServiceStart).toFixed(1));
         const totalValue = workedHours * hourlyRate;
 
-        const updatedOperation = await machineOperationModel.findByIdAndUpdate(operationID, { ...payload, totalHours, workedHours, totalValue, updatedAt: dateService.now() }, { new: true });
+        const updatedOperation = await machineOperationModel.findByIdAndUpdate(operationID, { ...payload, serviceDescription, totalHours, workedHours, totalValue, updatedAt: dateService.now() }, { new: true });
         if (!updatedOperation) return manageError({ code: "data_not_found" as never });
 
         await createLog({ action: "system_action", entity: "system", entityID: operationID, userID: ids.userID, data: { description: "Machine operation updated", data } });
@@ -140,7 +143,7 @@ const machineOperationResource = {
         if (!operationID) return manageError({ code: "invalid_params" as never });
 
         const operation = await machineOperationModel.findById(operationID).populate("fleet").populate("operator").lean();
-        if (!operation) return manageError({ code: "data_not_found" as never });
+        if (!operation) return operation;
 
         return operation;
     }
