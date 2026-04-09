@@ -6,11 +6,11 @@ import hasRole from "@middlewares/hasRole";
 
 const machineOperationRouter = Router();
 
-machineOperationRouter.patch("/:id/status", [hasRole([])], manageRequest(machineOperationResource.updateOperationStatus));
-machineOperationRouter.delete("/:id", [hasRole([])], manageRequest(machineOperationResource.deleteOperation));
-machineOperationRouter.patch("/:id", [hasRole([])], manageRequest(machineOperationResource.updateOperation));
-machineOperationRouter.get("/:id", [hasRole([])], manageRequest(machineOperationResource.getOperationById));
 machineOperationRouter.post("/", [hasRole([])], manageRequest(machineOperationResource.createOperation));
 machineOperationRouter.get("/", [hasRole([])], manageRequest(machineOperationResource.getAllOperations));
+machineOperationRouter.get("/:operationID", [hasRole([])], manageRequest(machineOperationResource.getOperationById));
+machineOperationRouter.patch("/:operationID", [hasRole([])], manageRequest(machineOperationResource.updateOperation));
+machineOperationRouter.delete("/:operationID", [hasRole([])], manageRequest(machineOperationResource.deleteOperation));
+machineOperationRouter.patch("/:operationID/status", [hasRole([])], manageRequest(machineOperationResource.updateOperationStatus));
 
 export default machineOperationRouter;

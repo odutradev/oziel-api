@@ -1,4 +1,3 @@
-
 import { Router } from "express";
 
 import logsResource from "@resources/logs/logs.resource";
@@ -7,13 +6,13 @@ import hasRole from "@middlewares/hasRole";
 
 const logsRouter = Router();
 
-logsRouter.get("/user/me", manageRequest(logsResource.getUserLogs));
-logsRouter.get("/entity/:entityID", manageRequest(logsResource.getEntityLogs));
-logsRouter.get("/action/:action", [hasRole([])], manageRequest(logsResource.getActionLogs));
+logsRouter.get("/users/me/activity", manageRequest(logsResource.getUserLogs));
+logsRouter.get("/entities/:entityID/history", manageRequest(logsResource.getEntityLogs));
+logsRouter.get("/actions/:actionName/records", [hasRole([])], manageRequest(logsResource.getActionLogs));
 
-logsRouter.get("/admin/activity", [hasRole([])], manageRequest(logsResource.getSystemActivity));
-logsRouter.get("/admin/errors", [hasRole([])], manageRequest(logsResource.getErrorLogs));
-logsRouter.get("/admin/stats", [hasRole([])], manageRequest(logsResource.getLogStats));
-logsRouter.get("/admin/all", [hasRole([])], manageRequest(logsResource.getAllLogs));
+logsRouter.get("/system/activity-overview", [hasRole([])], manageRequest(logsResource.getSystemActivity));
+logsRouter.get("/system/error-reports", [hasRole([])], manageRequest(logsResource.getErrorLogs));
+logsRouter.get("/system/statistics", [hasRole([])], manageRequest(logsResource.getLogStats));
+logsRouter.get("/system/all-records", [hasRole([])], manageRequest(logsResource.getAllLogs));
 
 export default logsRouter;

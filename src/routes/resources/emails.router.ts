@@ -6,15 +6,14 @@ import hasRole from "@middlewares/hasRole";
 
 const emailsRouter = Router();
 
-emailsRouter.post("/templates/create", [hasRole([])], manageRequest(emailsResource.createTemplate));
+emailsRouter.post("/templates", [hasRole([])], manageRequest(emailsResource.createTemplate));
+emailsRouter.get("/templates", [hasRole([])], manageRequest(emailsResource.getAllTemplates));
+emailsRouter.get("/templates/:templateID", [hasRole([])], manageRequest(emailsResource.getTemplate));
 emailsRouter.patch("/templates/:templateID", [hasRole([])], manageRequest(emailsResource.updateTemplate));
 emailsRouter.delete("/templates/:templateID", [hasRole([])], manageRequest(emailsResource.deleteTemplate));
-emailsRouter.get("/templates/:identifier", [hasRole([])], manageRequest(emailsResource.getTemplate));
-emailsRouter.get("/templates", [hasRole([])], manageRequest(emailsResource.getAllTemplates));
+emailsRouter.post("/templates/seed-initial", [hasRole([])], manageRequest(emailsResource.seedInitialTemplates));
 
-emailsRouter.post("/send/bulk", [hasRole([])], manageRequest(emailsResource.sendBulkEmail));
-emailsRouter.post("/send/all-users", [hasRole([])], manageRequest(emailsResource.sendToAllUsers));
-
-emailsRouter.post("/seed/initial-templates", [hasRole([])], manageRequest(emailsResource.seedInitialTemplates));
+emailsRouter.post("/deliveries/bulk", [hasRole([])], manageRequest(emailsResource.sendBulkEmail));
+emailsRouter.post("/deliveries/broadcast", [hasRole([])], manageRequest(emailsResource.sendToAllUsers));
 
 export default emailsRouter;

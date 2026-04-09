@@ -6,9 +6,9 @@ import hasRole from "@middlewares/hasRole";
 
 const recurringTransactionRouter = Router();
 
-recurringTransactionRouter.get("/", [hasRole([])], manageRequest(recurringTransactionResource.getAllRecurringTransactions));
-recurringTransactionRouter.delete("/:id", [hasRole([])], manageRequest(recurringTransactionResource.deleteRecurringTransaction));
-recurringTransactionRouter.patch("/:id", [hasRole([])], manageRequest(recurringTransactionResource.updateRecurringTransaction));
 recurringTransactionRouter.post("/", [hasRole([])], manageRequest(recurringTransactionResource.createRecurringTransaction));
+recurringTransactionRouter.get("/", [hasRole([])], manageRequest(recurringTransactionResource.getAllRecurringTransactions));
+recurringTransactionRouter.patch("/:transactionID", [hasRole([])], manageRequest(recurringTransactionResource.updateRecurringTransaction));
+recurringTransactionRouter.delete("/:transactionID", [hasRole([])], manageRequest(recurringTransactionResource.deleteRecurringTransaction));
 
 export default recurringTransactionRouter;

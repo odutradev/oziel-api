@@ -8,8 +8,8 @@ const vaultRouter = Router();
 
 vaultRouter.post("/", [hasRole([])], manageRequest(vaultResource.createVault));
 vaultRouter.get("/", [hasRole([])], manageRequest(vaultResource.getVaults));
-vaultRouter.get("/:id", [hasRole([])], manageRequest(vaultResource.getVaultById));
-vaultRouter.patch("/:id", [hasRole([])], manageRequest(vaultResource.updateVault));
-vaultRouter.post("/:id/transactions", [hasRole([])], manageRequest(vaultResource.processTransaction));
+vaultRouter.get("/:vaultID", [hasRole([])], manageRequest(vaultResource.getVaultById));
+vaultRouter.patch("/:vaultID", [hasRole([])], manageRequest(vaultResource.updateVault));
+vaultRouter.post("/:vaultID/transactions", [hasRole([])], manageRequest(vaultResource.processTransaction));
 
 export default vaultRouter;

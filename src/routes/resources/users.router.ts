@@ -8,20 +8,20 @@ import auth from "@middlewares/auth";
 
 const usersRouter = Router();
 
-usersRouter.post("/signup", manageRequest(usersResource.signUp));
-usersRouter.post("/signin", manageRequest(usersResource.signIn));
+usersRouter.post("/auth/register", manageRequest(usersResource.signUp));
+usersRouter.post("/auth/login", manageRequest(usersResource.signIn));
 
-usersRouter.post("/password/reset/request", manageRequest(usersResource.requestPasswordReset));
-usersRouter.post("/password/reset/verify", manageRequest(usersResource.verifyResetCode));
-usersRouter.post("/password/reset/confirm", manageRequest(usersResource.resetPassword));
+usersRouter.post("/auth/password-reset/request", manageRequest(usersResource.requestPasswordReset));
+usersRouter.post("/auth/password-reset/verify", manageRequest(usersResource.verifyResetCode));
+usersRouter.post("/auth/password-reset/confirm", manageRequest(usersResource.resetPassword));
 
-usersRouter.patch("/profile", [auth], manageRequest(usersResource.updateProfile));
-usersRouter.patch("/profile/image", [auth, upload.single("image")], manageRequest(usersResource.updateProfileImage, { upload: true }));
-usersRouter.get("/me", [auth], manageRequest(usersResource.getUser));
+usersRouter.patch("/me/profile", [auth], manageRequest(usersResource.updateProfile));
+usersRouter.patch("/me/profile/avatar", [auth, upload.single("image")], manageRequest(usersResource.updateProfileImage, { upload: true }));
+usersRouter.get("/me/details", [auth], manageRequest(usersResource.getUser));
 
-usersRouter.get("/all", [auth, hasRole([])], manageRequest(usersResource.getAllUsers));
-usersRouter.delete("/:userID", [auth, hasRole([])], manageRequest(usersResource.deleteUserById));
-usersRouter.patch("/:userID", [auth, hasRole([])], manageRequest(usersResource.updateUserById));
+usersRouter.get("/", [auth, hasRole([])], manageRequest(usersResource.getAllUsers));
 usersRouter.get("/:userID", [auth, hasRole([])], manageRequest(usersResource.getUserById));
+usersRouter.patch("/:userID", [auth, hasRole([])], manageRequest(usersResource.updateUserById));
+usersRouter.delete("/:userID", [auth, hasRole([])], manageRequest(usersResource.deleteUserById));
 
 export default usersRouter;
