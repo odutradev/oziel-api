@@ -7,37 +7,42 @@ const emailTemplateSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        enum: [
-            "PASSWORD_RESET",
-            "PASSWORD_CHANGED"
-        ]
+        enum: ["PASSWORD_RESET", "PASSWORD_CHANGED"],
+        description: "Gatilho de disparo do template de email"
     },
     subject: {
         type: String,
-        required: true
+        required: true,
+        description: "Assunto principal do email"
     },
     markdownBody: {
         type: String,
-        required: true
+        required: true,
+        description: "Conteudo do email formatado em markdown"
     },
     variables: {
         type: [String],
-        default: []
+        default: [],
+        description: "Lista de variaveis dinamicas aceitas no template"
     },
     description: {
-        type: String
+        type: String,
+        description: "Breve descricao da finalidade do template"
     },
     active: {
         type: Boolean,
-        default: true
+        default: true,
+        description: "Define se o template de email esta ativo"
     },
     createdAt: {
         type: Date,
-        default: () => dateService.now()
+        default: () => dateService.now(),
+        description: "Data de criacao do registro"
     },
     updatedAt: {
         type: Date,
-        default: () => dateService.now()
+        default: () => dateService.now(),
+        description: "Data da ultima atualizacao do registro"
     }
 });
 

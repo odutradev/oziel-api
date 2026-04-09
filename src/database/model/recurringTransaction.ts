@@ -5,18 +5,67 @@ import { TRANSACTION_TYPES_ARRAY } from "@utils/types/models/transaction";
 import dateService from "@utils/services/date.service";
 
 const recurringTransactionSchema = new mongoose.Schema({
-    title: { type: String, required: true },
-    amount: { type: Number, required: true },
-    type: { type: String, enum: TRANSACTION_TYPES_ARRAY, required: true },
-    frequency: { type: String, enum: RECURRING_FREQUENCIES_ARRAY, required: true },
-    dayOfMonth: { type: Number, min: 1, max: 31 },
-    intervalDays: { type: Number, min: 1 },
-    nextExecution: { type: Date, required: true },
-    active: { type: Boolean, default: true },
-    description: String,
-    category: String,
-    createdAt: { type: Date, default: () => dateService.now() },
-    updatedAt: { type: Date, default: () => dateService.now() }
+    title: {
+        type: String,
+        required: true,
+        description: "Titulo descritivo da transacao recorrente"
+    },
+    amount: {
+        type: Number,
+        required: true,
+        description: "Valor monetario da transacao recorrente"
+    },
+    type: {
+        type: String,
+        enum: TRANSACTION_TYPES_ARRAY,
+        required: true,
+        description: "Tipo de fluxo da transacao (entrada ou saida)"
+    },
+    frequency: {
+        type: String,
+        enum: RECURRING_FREQUENCIES_ARRAY,
+        required: true,
+        description: "Periodicidade de repeticao da transacao"
+    },
+    dayOfMonth: {
+        type: Number,
+        min: 1,
+        max: 31,
+        description: "Dia fixo do mes para execucao da transacao"
+    },
+    intervalDays: {
+        type: Number,
+        min: 1,
+        description: "Intervalo customizado de dias entre as execucoes"
+    },
+    nextExecution: {
+        type: Date,
+        required: true,
+        description: "Data programada para a proxima recorrencia"
+    },
+    active: {
+        type: Boolean,
+        default: true,
+        description: "Status que indica se a recorrencia segue gerando novas transacoes"
+    },
+    description: {
+        type: String,
+        description: "Detalhes complementares sobre a natureza desta transacao"
+    },
+    category: {
+        type: String,
+        description: "Categoria financeira para agrupamento de relatorios"
+    },
+    createdAt: {
+        type: Date,
+        default: () => dateService.now(),
+        description: "Data de criacao do agendamento"
+    },
+    updatedAt: {
+        type: Date,
+        default: () => dateService.now(),
+        description: "Data da ultima alteracao no agendamento"
+    }
 });
 
 recurringTransactionSchema.index({ nextExecution: 1, active: 1 });

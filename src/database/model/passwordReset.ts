@@ -4,31 +4,38 @@ const passwordResetSchema = new mongoose.Schema({
     userID: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "user",
-        required: true
+        required: true,
+        description: "Identificador do usuario solicitante"
     },
     email: {
         type: String,
-        required: true
+        required: true,
+        description: "Endereco de email vinculado a solicitacao"
     },
     code: {
         type: String,
-        required: true
+        required: true,
+        description: "Codigo seguro de verificacao gerado"
     },
     verified: {
         type: Boolean,
-        default: false
+        default: false,
+        description: "Indica se o codigo de redefinicao ja foi validado"
     },
     attempts: {
         type: Number,
-        default: 0
+        default: 0,
+        description: "Contagem de tentativas de validacao invalidas"
     },
     expiresAt: {
         type: Date,
-        required: true
+        required: true,
+        description: "Momento exato em que a validade do codigo expira"
     },
     createdAt: {
         type: Date,
-        default: () => Date.now()
+        default: () => Date.now(),
+        description: "Data de criacao do registro de redefinicao"
     }
 });
 
