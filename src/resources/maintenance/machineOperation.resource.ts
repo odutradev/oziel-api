@@ -67,6 +67,60 @@ const machineOperationResource = {
 
         return { data, meta: { total, page: pageNum, pages: Math.ceil(total / limitNum), limit: limitNum } };
     },
+    getMonthlyDashboard: async ({ querys, manageError }: ManageRequestBody) => {
+        const year = Number(querys?.year);
+        const month = Number(querys?.month);
+        if (!year || !month) return manageError({ code: "invalid_params" as never });
+
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+
+        const monthOperations = await machineOperationModel.find({ operationDate: { $gte: startDate, $lte: endDate } }).populate("fleet").populate("operator").sort({ operationDate: -1 }).lean();
+
+        const totalWorkedHours = monthOperations.reduce((acc, curr) => acc + (curr.workedHours ?? 0), 0);
+        const totalRevenue = monthOperations.reduce((acc, curr) => acc + (curr.totalValue ?? 0), 0);
+        const pendingRevenue = monthOperations.filter(op => op.status === "PENDING").reduce((acc, curr) => acc + (curr.totalValue ?? 0), 0);
+        const consolidatedRevenue = monthOperations.filter(op => op.status === "CONSOLIDATED").reduce((acc, curr) => acc + (curr.totalValue ?? 0), 0);
+
+        return { metrics: { totalWorkedHours, totalRevenue, pendingRevenue, consolidatedRevenue }, operations: monthOperations };
+    },
+    getMonthlyClosingReport: async ({ querys, manageError }: ManageRequestBody) => {
+        const year = Number(querys?.year);
+        const month = Number(querys?.month);
+        if (!year || !month) return manageError({ code: "invalid_params" as never });
+
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+
+        const operations = await machineOperationModel.find({ operationDate: { $gte: startDate, $lte: endDate }, status: { $ne: "CANCELLED" } }).populate("operator").sort({ operationDate: 1 }).lean();
+
+        const details = operations.map((op, index) => ({
+            serviceOrder: index + 1,
+            operatorName: (op.operator as { name?: string })?.name ?? "Desconhecido",
+            description: op.serviceDescription,
+            hours: op.workedHours,
+            hourlyRate: op.hourlyRate,
+            total: op.totalValue
+        }));
+
+        const totals = operations.reduce((acc, curr) => {
+            acc.hours += curr.workedHours ?? 0;
+            acc.revenue += curr.totalValue ?? 0;
+            return acc;
+        }, { hours: 0, revenue: 0 });
+
+        const operatorTotalsMap = operations.reduce((acc, curr) => {
+            const opName = (curr.operator as { name?: string })?.name ?? "Desconhecido";
+            if (!acc[opName]) acc[opName] = { hours: 0, revenue: 0 };
+            acc[opName].hours += curr.workedHours ?? 0;
+            acc[opName].revenue += curr.totalValue ?? 0;
+            return acc;
+        }, {} as Record<string, { hours: number; revenue: number }>);
+
+        const operatorTotals = Object.entries(operatorTotalsMap).map(([name, data]) => ({ name, ...data }));
+
+        return { period: { year, month }, details, totals, operatorTotals };
+    },
     updateOperationStatus: async ({ params, data, createLog, ids, manageError }: ManageRequestBody) => {
         const operationID = params?.id as string;
         if (!operationID) return manageError({ code: "invalid_params" as never });

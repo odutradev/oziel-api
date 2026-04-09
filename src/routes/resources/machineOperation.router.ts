@@ -8,6 +8,8 @@ const machineOperationRouter = Router();
 
 machineOperationRouter.post("/", [hasRole([])], manageRequest(machineOperationResource.createOperation));
 machineOperationRouter.get("/", [hasRole([])], manageRequest(machineOperationResource.getAllOperations));
+machineOperationRouter.get("/monthly-dashboard", [hasRole([])], manageRequest(machineOperationResource.getMonthlyDashboard));
+machineOperationRouter.get("/monthly-closing", [hasRole([])], manageRequest(machineOperationResource.getMonthlyClosingReport));
 machineOperationRouter.get("/:operationID", [hasRole([])], manageRequest(machineOperationResource.getOperationById));
 machineOperationRouter.patch("/:operationID", [hasRole([])], manageRequest(machineOperationResource.updateOperation));
 machineOperationRouter.delete("/:operationID", [hasRole([])], manageRequest(machineOperationResource.deleteOperation));
