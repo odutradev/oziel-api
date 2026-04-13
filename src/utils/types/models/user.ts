@@ -45,4 +45,10 @@ export type UserModelType = {
     email?: string;
     order?: number;
     name?: string;
+    hrControl?: {
+        isMonitored?: boolean;
+        familyMembers?: number;
+        address?: string;
+        phone?: string;
+    };
 };
