@@ -2,10 +2,12 @@ import { Router } from "express";
 
 import recurringTransactionRouter from "./resources/recurringTransaction.router";
 import machineOperationRouter from "./resources/machineOperation.router";
+import productionRouter from "./resources/production.router";
 import hrMembersRouter from "./resources/hrMembers.router";
 import treasuryRouter from "./resources/treasury.router";
 import operatorRouter from "./resources/operator.router";
 import controlAccess from "@middlewares/controlAccess";
+import productRouter from "./resources/product.router";
 import emailsRouter from "./resources/emails.router";
 import fleetRouter from "./resources/fleet.router";
 import vaultRouter from "./resources/vault.router";
@@ -25,6 +27,8 @@ router.get("/system/validate-access", controlAccess, (req, res) => {
 
 router.use("/hr/members", [auth, controlAccess], hrMembersRouter);
 router.use("/users", [controlAccess], usersRouter);
+router.use("/agriculture/productions", [auth, controlAccess], productionRouter);
+router.use("/agriculture/products", [auth, controlAccess], productRouter);
 router.use("/maintenance/machine-operations", [auth, controlAccess], machineOperationRouter);
 router.use("/maintenance/operators", [auth, controlAccess], operatorRouter);
 router.use("/maintenance/fleets", [auth, controlAccess], fleetRouter);
