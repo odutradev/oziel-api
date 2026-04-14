@@ -6,10 +6,10 @@ import hasRole from "@middlewares/hasRole";
 
 const hrMembersRouter = Router();
 
-hrMembersRouter.post("/", [hasRole([])], manageRequest(membersResource.createMember));
-hrMembersRouter.get("/", [hasRole([])], manageRequest(membersResource.getAllMembers));
-hrMembersRouter.get("/:id", [hasRole([])], manageRequest(membersResource.getMemberById));
-hrMembersRouter.patch("/:id", [hasRole([])], manageRequest(membersResource.updateMember));
-hrMembersRouter.delete("/:id", [hasRole([])], manageRequest(membersResource.deleteMember));
+hrMembersRouter.post("/", manageRequest(membersResource.createMember));
+hrMembersRouter.get("/", manageRequest(membersResource.getAllMembers));
+hrMembersRouter.get("/:id", manageRequest(membersResource.getMemberById));
+hrMembersRouter.patch("/:id", manageRequest(membersResource.updateMember));
+hrMembersRouter.delete("/:id", manageRequest(membersResource.deleteMember));
 
 export default hrMembersRouter;
