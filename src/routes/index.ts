@@ -4,6 +4,7 @@ import recurringTransactionRouter from "./resources/recurringTransaction.router"
 import machineOperationRouter from "./resources/machineOperation.router";
 import productionRouter from "./resources/production.router";
 import hrMembersRouter from "./resources/hrMembers.router";
+import contractRouter from "./resources/contract.router";
 import treasuryRouter from "./resources/treasury.router";
 import operatorRouter from "./resources/operator.router";
 import controlAccess from "@middlewares/controlAccess";
@@ -27,6 +28,7 @@ router.get("/system/validate-access", controlAccess, (req, res) => {
 
 router.use("/hr/members", [auth, controlAccess], hrMembersRouter);
 router.use("/users", [controlAccess], usersRouter);
+router.use("/contracts", [auth, controlAccess], contractRouter);
 router.use("/agriculture/productions", [auth, controlAccess], productionRouter);
 router.use("/agriculture/products", [auth, controlAccess], productRouter);
 router.use("/maintenance/machine-operations", [auth, controlAccess], machineOperationRouter);
