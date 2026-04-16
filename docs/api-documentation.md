@@ -185,3 +185,21 @@ Gerencia usuários específicos monitorados pelo RH.
 - **PATCH** `/:id`
   - **Body:** `{ "status": "ANALYSIS", "assignedTo": "id_do_tecnico", "resolutionNotes": "Verificando logs do servidor" }`
 - **DELETE** `/:id`
+
+---
+
+## 8. Marketing (`/v1/marketing/requests`)
+
+### Solicitações e Aprovações de Comunicação
+- **POST** `/`
+  - **Body:** `{ "title": "Campanha de Inverno", "description": "Divulgar novos produtos do setor" }`
+- **GET** `/` (Paginado)
+- **GET** `/:id`
+- **PATCH** `/:id`
+  - **Body:** `{ "content": "Texto do post...", "strategy": "Instagram e Facebook" }`
+- **DELETE** `/:id`
+- **POST** `/:id/send-approval`
+  - **Descrição:** Altera o status para `WAITING_APPROVAL`, enviando para a diretoria.
+- **POST** `/:id/review`
+  - **Body:** `{ "approved": true, "feedbackNotes": "Conteúdo excelente, pode seguir com a publicação." }`
+  - **Descrição:** Diretoria aprova (`APPROVED`) ou solicita ajustes (`REVISION_REQUIRED`).

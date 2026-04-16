@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import recurringTransactionRouter from "./resources/recurringTransaction.router";
 import machineOperationRouter from "./resources/machineOperation.router";
+import marketingRequestRouter from "./resources/marketingRequest.router";
 import productionRouter from "./resources/production.router";
 import hrMembersRouter from "./resources/hrMembers.router";
 import contractRouter from "./resources/contract.router";
@@ -41,5 +42,6 @@ router.use("/treasury/vaults", [auth, controlAccess], vaultRouter);
 router.use("/communications/emails", [auth, controlAccess], emailsRouter);
 router.use("/system/logs", [auth, controlAccess], logsRouter);
 router.use("/it/tickets", [auth, controlAccess], ticketRouter);
+router.use("/marketing/requests", [auth, controlAccess], marketingRequestRouter);
 
 export default router;
