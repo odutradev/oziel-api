@@ -172,3 +172,16 @@ Gerencia usuários específicos monitorados pelo RH.
 - **GET** `/system/statistics`
   - **Query:** `?startDate=ISO&endDate=ISO`
 - **GET** `/system/all-records` (Paginado)
+
+---
+
+## 7. TI e Suporte (`/v1/it/tickets`)
+
+### Chamados de Suporte
+- **POST** `/`
+  - **Body:** `{ "title": "Problema no e-mail", "description": "Não recebo e-mails externos", "priority": "MEDIUM" }`
+- **GET** `/` (Paginado)
+- **GET** `/:id`
+- **PATCH** `/:id`
+  - **Body:** `{ "status": "ANALYSIS", "assignedTo": "id_do_tecnico", "resolutionNotes": "Verificando logs do servidor" }`
+- **DELETE** `/:id`
