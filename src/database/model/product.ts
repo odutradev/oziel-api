@@ -25,8 +25,8 @@ const productSchema = new mongoose.Schema({
     }
 });
 
-productSchema.index({ name: 1 });
 productSchema.index({ active: 1 });
+productSchema.index({ name: 1 });
 
 const productModel = mongoose.model("product", productSchema);
 

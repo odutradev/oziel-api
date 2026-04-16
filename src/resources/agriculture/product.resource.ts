@@ -9,7 +9,7 @@ const productResource = {
         const payload = data as Partial<ProductModelType>;
         if (!payload.name) return manageError({ code: "invalid_params" as never });
 
-        const product = await productModel.create({ ...payload, active: payload.active ?? true });
+        const product = await productModel.create({ ...payload, active: payload.active ?? true, unit: "kg" });
         await createLog({ action: "system_action", entity: "system", entityID: product._id.toString(), userID: ids.userID, data: { description: "Product created", product } });
 
         return product;
@@ -19,7 +19,7 @@ const productResource = {
         if (!productID) return manageError({ code: "invalid_params" as never });
 
         const payload = data as Partial<ProductModelType>;
-        const updatedProduct = await productModel.findByIdAndUpdate(productID, { ...payload, updatedAt: dateService.now() }, { new: true });
+        const updatedProduct = await productModel.findByIdAndUpdate(productID, { ...payload, unit: "kg", updatedAt: dateService.now() }, { new: true });
         if (!updatedProduct) return manageError({ code: "data_not_found" as never });
 
         await createLog({ action: "system_action", entity: "system", entityID: productID, userID: ids.userID, data: { description: "Product updated", data } });

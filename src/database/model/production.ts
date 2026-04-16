@@ -3,25 +3,15 @@ import mongoose from "mongoose";
 import dateService from "@utils/services/date.service";
 
 const productionSchema = new mongoose.Schema({
-    producer: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "user",
-        required: true
-    },
-    product: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "product",
-        required: true
-    },
     referenceYear: {
         type: Number,
         required: true
     },
-    quantity: {
+    productionArea: {
         type: Number,
         required: true
     },
-    productionArea: {
+    quantity: {
         type: Number,
         required: true
     },
@@ -34,6 +24,16 @@ const productionSchema = new mongoose.Schema({
     active: {
         type: Boolean,
         default: true
+    },
+    producer: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+        required: true
+    },
+    product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "product",
+        required: true
     },
     createdAt: {
         type: Date,
