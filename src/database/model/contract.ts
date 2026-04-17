@@ -25,7 +25,6 @@ const contractSchema = new mongoose.Schema({
     },
     deliveryForecast: {
         type: Date,
-        required: true
     },
     endDate: {
         type: Date

@@ -7,7 +7,7 @@ import type { ManageRequestBody } from "@middlewares/manageRequest";
 const contractResource = {
     createContract: async ({ data, createLog, ids, manageError }: ManageRequestBody) => {
         const payload = data as Partial<ContractModelType>;
-        if (!payload.code || !payload.type || !payload.contractDate || !payload.deliveryForecast || typeof payload.totalValue !== "number" || typeof payload.totalSalePrice !== "number") return manageError({ code: "invalid_params" as never });
+        if (!payload.code || !payload.type || !payload.contractDate || typeof payload.totalValue !== "number" || typeof payload.totalSalePrice !== "number") return manageError({ code: "invalid_params" as never });
 
         const existingContract = await contractModel.findOne({ code: payload.code });
         if (existingContract) return manageError({ code: "data_already_exists" as never });
