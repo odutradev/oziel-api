@@ -19,12 +19,15 @@ const contractSchema = new mongoose.Schema({
         enum: CONTRACT_STATUS_ARRAY,
         default: CONTRACT_STATUS.ACTIVE
     },
+    detailsMarkdown: {
+        type: String
+    },
     contractDate: {
         type: Date,
         required: true
     },
     deliveryForecast: {
-        type: Date,
+        type: Date
     },
     endDate: {
         type: Date
