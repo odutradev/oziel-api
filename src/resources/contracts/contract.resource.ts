@@ -1,5 +1,5 @@
-import contractModel from "@database/model/contract";
 import dateService from "@utils/services/date.service";
+import contractModel from "@database/model/contract";
 
 import type { ContractModelType } from "@utils/types/models/contract";
 import type { ManageRequestBody } from "@middlewares/manageRequest";
@@ -58,6 +58,90 @@ const contractResource = {
         ]);
 
         return { data, meta: { total, page: pageNum, pages: Math.ceil(total / limitNum), limit: limitNum } };
+    },
+    getDashboardMetrics: async ({ querys }: ManageRequestBody) => {
+        const matchStage: Record<string, unknown> = {};
+
+        if (querys?.startDate && querys?.endDate) {
+            matchStage.contractDate = {
+                $gte: new Date(querys.startDate as string),
+                $lte: new Date(querys.endDate as string)
+            };
+        }
+
+        const [aggregationResult, recentContracts] = await Promise.all([
+            contractModel.aggregate([
+                { $match: matchStage },
+                {
+                    $facet: {
+                        overall: [
+                            {
+                                $group: {
+                                    _id: null,
+                                    totalContracts: { $sum: 1 },
+                                    totalValue: { $sum: "$totalValue" },
+                                    totalSalePrice: { $sum: "$totalSalePrice" }
+                                }
+                            }
+                        ],
+                        byStatus: [
+                            {
+                                $group: {
+                                    _id: "$status",
+                                    count: { $sum: 1 },
+                                    value: { $sum: "$totalValue" }
+                                }
+                            }
+                        ],
+                        byType: [
+                            {
+                                $group: {
+                                    _id: "$type",
+                                    count: { $sum: 1 },
+                                    value: { $sum: "$totalValue" }
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]),
+            contractModel.find(matchStage).sort({ contractDate: -1 }).limit(10).lean()
+        ]);
+
+        const metrics = aggregationResult[0] ?? {};
+        const overall = metrics.overall?.[0] ?? { totalContracts: 0, totalValue: 0, totalSalePrice: 0 };
+        const byStatus = metrics.byStatus ?? [];
+        const byType = metrics.byType ?? [];
+
+        const profit = overall.totalSalePrice - overall.totalValue;
+        const profitMargin = overall.totalSalePrice > 0 ? (profit / overall.totalSalePrice) * 100 : 0;
+
+        const formattedStatus = byStatus.map((item: { _id: string; count: number; value: number }) => ({
+            status: item._id,
+            count: item.count,
+            value: item.value
+        }));
+
+        const formattedType = byType.map((item: { _id: string; count: number; value: number }) => ({
+            type: item._id,
+            count: item.count,
+            value: item.value
+        }));
+
+        return {
+            summary: {
+                totalContracts: overall.totalContracts,
+                totalValue: overall.totalValue,
+                totalSalePrice: overall.totalSalePrice,
+                expectedProfit: profit,
+                profitMarginPercentage: Number(profitMargin.toFixed(2))
+            },
+            distribution: {
+                byStatus: formattedStatus,
+                byType: formattedType
+            },
+            recentContracts
+        };
     },
     getContractById: async ({ params, manageError }: ManageRequestBody) => {
         const contractID = params?.id as string;
