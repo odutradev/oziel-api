@@ -52,7 +52,8 @@ const membersResource = {
 
         if (payload.name) payload.name = stringService.normalizeString(payload.name);
 
-        const updateData: any = { ...payload, lastUpdate: dateService.now() };
+        const updateData: Record<string, unknown> = { ...payload, lastUpdate: dateService.now() };
+
         if (payload.hrControl) {
             if (payload.hrControl.familyMembers !== undefined) updateData["hrControl.familyMembers"] = payload.hrControl.familyMembers;
             if (payload.hrControl.address !== undefined) updateData["hrControl.address"] = payload.hrControl.address;
@@ -104,6 +105,33 @@ const membersResource = {
         if (!member) return manageError({ code: "data_not_found" as never });
 
         return member;
+    },
+    getDashboardMetrics: async () => {
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+        const [totalMembers, byStatus, familyMembersAggregation, newThisMonth] = await Promise.all([
+            userModel.countDocuments({ "hrControl.isMonitored": true }),
+            userModel.aggregate([
+                { $match: { "hrControl.isMonitored": true } },
+                { $group: { _id: "$status", count: { $sum: 1 } } }
+            ]),
+            userModel.aggregate([
+                { $match: { "hrControl.isMonitored": true } },
+                { $group: { _id: null, totalFamily: { $sum: "$hrControl.familyMembers" } } }
+            ]),
+            userModel.countDocuments({ "hrControl.isMonitored": true, createAt: { $gte: startOfMonth } })
+        ]);
+
+        const statusDistribution = byStatus.reduce((acc, curr) => ({ ...acc, [curr._id]: curr.count }), {} as Record<string, number>);
+        const totalFamilyMembers = familyMembersAggregation[0]?.totalFamily ?? 0;
+
+        return {
+            totalMembers,
+            totalFamilyMembers,
+            newThisMonth,
+            statusDistribution
+        };
     }
 };
 
