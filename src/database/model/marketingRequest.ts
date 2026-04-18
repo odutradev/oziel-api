@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
 
-import { MARKETING_REQUEST_STATUS_ARRAY, MARKETING_REQUEST_STATUS } from "@utils/types/models/marketingRequest";
-import dateService from "@utils/services/date.service";
+import { MARKETING_REQUEST_STATUS_ARRAY, MARKETING_REQUEST_STATUS } from "@utils/types/models/marketingRequest"
+import dateService from "@utils/services/date.service"
 
 const marketingRequestSchema = new mongoose.Schema({
     title: {
@@ -20,7 +20,10 @@ const marketingRequestSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: MARKETING_REQUEST_STATUS_ARRAY,
-        default: MARKETING_REQUEST_STATUS.REQUESTED
+        default: MARKETING_REQUEST_STATUS.DRAFT
+    },
+    plannedDate: {
+        type: Date
     },
     strategy: {
         type: String
@@ -46,12 +49,13 @@ const marketingRequestSchema = new mongoose.Schema({
         type: Date,
         default: () => dateService.now()
     }
-});
+})
 
-marketingRequestSchema.index({ requester: 1 });
-marketingRequestSchema.index({ status: 1 });
-marketingRequestSchema.index({ createdAt: -1 });
+marketingRequestSchema.index({ requester: 1 })
+marketingRequestSchema.index({ status: 1 })
+marketingRequestSchema.index({ plannedDate: 1 })
+marketingRequestSchema.index({ createdAt: -1 })
 
-const marketingRequestModel = mongoose.model("marketingRequest", marketingRequestSchema);
+const marketingRequestModel = mongoose.model("marketingRequest", marketingRequestSchema)
 
-export default marketingRequestModel;
+export default marketingRequestModel
