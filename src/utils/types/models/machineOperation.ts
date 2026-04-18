@@ -8,7 +8,7 @@ export type MachineOperationStatusType = typeof MACHINE_OPERATION_STATUS[keyof t
 
 export interface MachineOperationModelType {
     _id: string;
-    fleet: string;
+    asset: string;
     operator: string;
     serviceDescription: string;
     operationDate: Date;

@@ -1,20 +1,20 @@
 import { Router } from "express";
 
 import recurringTransactionRouter from "./resources/recurringTransaction.router";
-import machineOperationRouter from "./resources/machineOperation.router";
 import marketingRequestRouter from "./resources/marketingRequest.router";
+import machineOperationRouter from "./resources/machineOperation.router";
 import productionRouter from "./resources/production.router";
 import hrMembersRouter from "./resources/hrMembers.router";
+import treasuryRouter from "./resources/treasury.router";
 import contractRouter from "./resources/contract.router";
 import operatorRouter from "./resources/operator.router";
-import treasuryRouter from "./resources/treasury.router";
-import controlAccess from "@middlewares/controlAccess";
 import productRouter from "./resources/product.router";
+import controlAccess from "@middlewares/controlAccess";
 import ticketRouter from "./resources/ticket.router";
 import emailsRouter from "./resources/emails.router";
-import vaultRouter from "./resources/vault.router";
-import fleetRouter from "./resources/fleet.router";
 import usersRouter from "./resources/users.router";
+import vaultRouter from "./resources/vault.router";
+import assetRouter from "./resources/asset.router";
 import logsRouter from "./resources/logs.router";
 import auth from "@middlewares/auth";
 
@@ -35,7 +35,7 @@ router.use("/agriculture/productions", [auth, controlAccess], productionRouter);
 router.use("/agriculture/products", [auth, controlAccess], productRouter);
 router.use("/maintenance/machine-operations", [auth, controlAccess], machineOperationRouter);
 router.use("/maintenance/operators", [auth, controlAccess], operatorRouter);
-router.use("/maintenance/fleets", [auth, controlAccess], fleetRouter);
+router.use("/maintenance/assets", [auth, controlAccess], assetRouter);
 router.use("/treasury/recurring-transactions", [auth, controlAccess], recurringTransactionRouter);
 router.use("/treasury/transactions", [auth, controlAccess], treasuryRouter);
 router.use("/treasury/vaults", [auth, controlAccess], vaultRouter);
