@@ -34,6 +34,15 @@ const marketingCalendarResource = {
 
         return { data }
     },
+    getCalendarItem: async ({ params, manageError }: ManageRequestBody) => {
+        const itemID = params?.id as string
+        if (!itemID) return manageError({ code: "invalid_params" as never })
+
+        const data = await marketingRequestModel.findOne({ _id: itemID, status: { $ne: "DRAFT" } }).populate("requester", "name email").populate("approvedBy", "name email").lean()
+        if (!data) return manageError({ code: "data_not_found" as never })
+
+        return { data }
+    },
     updateCalendarItem: async ({ params, data, createLog, ids, manageError }: ManageRequestBody) => {
         const itemID = params?.id as string
         if (!itemID) return manageError({ code: "invalid_params" as never })
