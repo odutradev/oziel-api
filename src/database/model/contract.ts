@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
 
-import { CONTRACT_STATUS_ARRAY, CONTRACT_TYPES_ARRAY, CONTRACT_STATUS } from "@utils/types/models/contract";
-import dateService from "@utils/services/date.service";
+import { CONTRACT_SITUATION_ARRAY, CONTRACT_STATUS_ARRAY, CONTRACT_TYPES_ARRAY, CONTRACT_SITUATION, CONTRACT_STATUS } from "@utils/types/models/contract"
+import dateService from "@utils/services/date.service"
 
 const contractSchema = new mongoose.Schema({
     code: {
@@ -18,6 +18,11 @@ const contractSchema = new mongoose.Schema({
         type: String,
         enum: CONTRACT_STATUS_ARRAY,
         default: CONTRACT_STATUS.ACTIVE
+    },
+    situation: {
+        type: String,
+        enum: CONTRACT_SITUATION_ARRAY,
+        default: CONTRACT_SITUATION.REGULAR
     },
     detailsMarkdown: {
         type: String
@@ -48,13 +53,14 @@ const contractSchema = new mongoose.Schema({
         type: Date,
         default: () => dateService.now()
     }
-});
+})
 
-contractSchema.index({ code: 1 });
-contractSchema.index({ status: 1 });
-contractSchema.index({ type: 1 });
-contractSchema.index({ contractDate: -1 });
+contractSchema.index({ code: 1 })
+contractSchema.index({ status: 1 })
+contractSchema.index({ situation: 1 })
+contractSchema.index({ type: 1 })
+contractSchema.index({ contractDate: -1 })
 
-const contractModel = mongoose.model("contract", contractSchema);
+const contractModel = mongoose.model("contract", contractSchema)
 
-export default contractModel;
+export default contractModel
