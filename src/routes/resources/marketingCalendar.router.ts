@@ -9,8 +9,9 @@ const marketingCalendarRouter = Router()
 marketingCalendarRouter.get("/", [hasRole([])], manageRequest(marketingCalendarResource.getCalendarItems))
 marketingCalendarRouter.get("/:id", [hasRole([])], manageRequest(marketingCalendarResource.getCalendarItem))
 marketingCalendarRouter.patch("/:id", [hasRole([])], manageRequest(marketingCalendarResource.updateCalendarItem))
-marketingCalendarRouter.post("/:id/schedule", [hasRole([])], manageRequest(marketingCalendarResource.scheduleDraft))
+marketingCalendarRouter.delete("/:id", [hasRole([])], manageRequest(marketingCalendarResource.deleteCalendarItem))
 marketingCalendarRouter.post("/:id/review", [hasRole([])], manageRequest(marketingCalendarResource.reviewApproval))
+marketingCalendarRouter.post("/:id/schedule", [hasRole([])], manageRequest(marketingCalendarResource.scheduleDraft))
 marketingCalendarRouter.post("/:id/send-approval", [hasRole([])], manageRequest(marketingCalendarResource.sendForApproval))
 
 export default marketingCalendarRouter

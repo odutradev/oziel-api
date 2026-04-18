@@ -6,8 +6,8 @@ import hasRole from "@middlewares/hasRole"
 
 const marketingDraftRouter = Router()
 
-marketingDraftRouter.post("/", [hasRole([])], manageRequest(marketingDraftResource.createDraft))
 marketingDraftRouter.get("/", [hasRole([])], manageRequest(marketingDraftResource.getAllDrafts))
+marketingDraftRouter.post("/", [hasRole([])], manageRequest(marketingDraftResource.createDraft))
 marketingDraftRouter.patch("/:id", [hasRole([])], manageRequest(marketingDraftResource.updateDraft))
 marketingDraftRouter.delete("/:id", [hasRole([])], manageRequest(marketingDraftResource.deleteDraft))
 

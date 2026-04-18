@@ -59,6 +59,17 @@ const marketingCalendarResource = {
 
         return updatedItem
     },
+    deleteCalendarItem: async ({ params, createLog, ids, manageError }: ManageRequestBody) => {
+        const itemID = params?.id as string
+        if (!itemID) return manageError({ code: "invalid_params" as never })
+
+        const deletedItem = await marketingRequestModel.findOneAndDelete({ _id: itemID, status: { $ne: "DRAFT" } })
+        if (!deletedItem) return manageError({ code: "data_not_found" as never })
+
+        await createLog({ action: "system_action", entity: "system", entityID: itemID, userID: ids.userID, data: { description: "Marketing calendar item deleted" } })
+
+        return { success: true }
+    },
     sendForApproval: async ({ params, createLog, ids, manageError }: ManageRequestBody) => {
         const itemID = params?.id as string
         if (!itemID) return manageError({ code: "invalid_params" as never })
