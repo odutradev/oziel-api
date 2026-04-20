@@ -53,6 +53,15 @@ const marketingDraftResource = {
         ])
 
         return { data, meta: { total, page: pageNum, pages: Math.ceil(total / limitNum), limit: limitNum } }
+    },
+    getDraft: async ({ params, manageError }: ManageRequestBody) => {
+        const draftID = params?.id as string
+        if (!draftID) return manageError({ code: "invalid_params" as never })
+
+        const data = await marketingRequestModel.findOne({ _id: draftID, status: "DRAFT" }).populate("requester", "name email").lean()
+        if (!data) return manageError({ code: "data_not_found" as never })
+
+        return { data }
     }
 }
 
