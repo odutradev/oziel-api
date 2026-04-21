@@ -418,7 +418,7 @@ const usersResource = {
             const userExists = await hasUser({ _id: userID }, manageError);
             if (!userExists) return;
 
-            const filteredUser = objectService.filterObject(data, ["id", "order", "role", "createAt", "password", "_id"]);
+            const filteredUser = objectService.filterObject(data, ["id", "order", "createAt", "password", "_id"]);
 
             if (filteredUser.name){
                 filteredUser.name = stringService.normalizeString(filteredUser.name);
