@@ -1,5 +1,5 @@
-import ticketModel from "@database/model/ticket";
 import dateService from "@utils/services/date.service";
+import ticketModel from "@database/model/ticket";
 
 import type { ManageRequestBody } from "@middlewares/manageRequest";
 import type { TicketModelType } from "@utils/types/models/ticket";
@@ -58,6 +58,18 @@ const ticketResource = {
         if (!ticket) return manageError({ code: "data_not_found" as never });
 
         return ticket;
+    },
+    getDashboardMetrics: async () => {
+        const [total, statusData, priorityData] = await Promise.all([
+            ticketModel.countDocuments(),
+            ticketModel.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }]),
+            ticketModel.aggregate([{ $group: { _id: "$priority", count: { $sum: 1 } } }])
+        ]);
+
+        const byStatus = statusData.reduce((acc, curr) => ({ ...acc, [curr._id]: curr.count }), {});
+        const byPriority = priorityData.reduce((acc, curr) => ({ ...acc, [curr._id]: curr.count }), {});
+
+        return { total, byStatus, byPriority };
     }
 };
 
