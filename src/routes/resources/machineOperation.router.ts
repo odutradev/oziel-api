@@ -2,17 +2,16 @@ import { Router } from "express";
 
 import machineOperationResource from "@resources/maintenance/machineOperation.resource";
 import manageRequest from "@middlewares/manageRequest";
-import hasRole from "@middlewares/hasRole";
 
 const machineOperationRouter = Router();
 
-machineOperationRouter.post("/", [hasRole([])], manageRequest(machineOperationResource.createOperation));
-machineOperationRouter.get("/", [hasRole([])], manageRequest(machineOperationResource.getAllOperations));
-machineOperationRouter.get("/monthly-dashboard", [hasRole([])], manageRequest(machineOperationResource.getMonthlyDashboard));
-machineOperationRouter.get("/monthly-closing", [hasRole([])], manageRequest(machineOperationResource.getMonthlyClosingReport));
-machineOperationRouter.get("/:operationID", [hasRole([])], manageRequest(machineOperationResource.getOperationById));
-machineOperationRouter.patch("/:operationID", [hasRole([])], manageRequest(machineOperationResource.updateOperation));
-machineOperationRouter.delete("/:operationID", [hasRole([])], manageRequest(machineOperationResource.deleteOperation));
-machineOperationRouter.patch("/:operationID/status", [hasRole([])], manageRequest(machineOperationResource.updateOperationStatus));
+machineOperationRouter.post("/", manageRequest(machineOperationResource.createOperation));
+machineOperationRouter.get("/", manageRequest(machineOperationResource.getAllOperations));
+machineOperationRouter.get("/monthly-dashboard", manageRequest(machineOperationResource.getMonthlyDashboard));
+machineOperationRouter.get("/monthly-closing", manageRequest(machineOperationResource.getMonthlyClosingReport));
+machineOperationRouter.get("/:operationID", manageRequest(machineOperationResource.getOperationById));
+machineOperationRouter.patch("/:operationID", manageRequest(machineOperationResource.updateOperation));
+machineOperationRouter.delete("/:operationID", manageRequest(machineOperationResource.deleteOperation));
+machineOperationRouter.patch("/:operationID/status", manageRequest(machineOperationResource.updateOperationStatus));
 
 export default machineOperationRouter;

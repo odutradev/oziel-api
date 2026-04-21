@@ -1,17 +1,16 @@
-import { Router } from "express"
+import { Router } from "express";
 
-import marketingCalendarResource from "@resources/marketing/calendar.resource"
-import manageRequest from "@middlewares/manageRequest"
-import hasRole from "@middlewares/hasRole"
+import marketingCalendarResource from "@resources/marketing/calendar.resource";
+import manageRequest from "@middlewares/manageRequest";
 
-const marketingCalendarRouter = Router()
+const marketingCalendarRouter = Router();
 
-marketingCalendarRouter.get("/", [hasRole([])], manageRequest(marketingCalendarResource.getCalendarItems))
-marketingCalendarRouter.get("/:id", [hasRole([])], manageRequest(marketingCalendarResource.getCalendarItem))
-marketingCalendarRouter.patch("/:id", [hasRole([])], manageRequest(marketingCalendarResource.updateCalendarItem))
-marketingCalendarRouter.delete("/:id", [hasRole([])], manageRequest(marketingCalendarResource.deleteCalendarItem))
-marketingCalendarRouter.post("/:id/review", [hasRole([])], manageRequest(marketingCalendarResource.reviewApproval))
-marketingCalendarRouter.post("/:id/schedule", [hasRole([])], manageRequest(marketingCalendarResource.scheduleDraft))
-marketingCalendarRouter.post("/:id/send-approval", [hasRole([])], manageRequest(marketingCalendarResource.sendForApproval))
+marketingCalendarRouter.get("/", manageRequest(marketingCalendarResource.getCalendarItems));
+marketingCalendarRouter.get("/:id", manageRequest(marketingCalendarResource.getCalendarItem));
+marketingCalendarRouter.patch("/:id", manageRequest(marketingCalendarResource.updateCalendarItem));
+marketingCalendarRouter.delete("/:id", manageRequest(marketingCalendarResource.deleteCalendarItem));
+marketingCalendarRouter.post("/:id/review", manageRequest(marketingCalendarResource.reviewApproval));
+marketingCalendarRouter.post("/:id/schedule", manageRequest(marketingCalendarResource.scheduleDraft));
+marketingCalendarRouter.post("/:id/send-approval", manageRequest(marketingCalendarResource.sendForApproval));
 
-export default marketingCalendarRouter
+export default marketingCalendarRouter;

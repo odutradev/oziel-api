@@ -2,14 +2,13 @@ import { Router } from "express";
 
 import vaultResource from "@resources/treasury/vault.resource";
 import manageRequest from "@middlewares/manageRequest";
-import hasRole from "@middlewares/hasRole";
 
 const vaultRouter = Router();
 
-vaultRouter.post("/", [hasRole([])], manageRequest(vaultResource.createVault));
-vaultRouter.get("/", [hasRole([])], manageRequest(vaultResource.getVaults));
-vaultRouter.get("/:vaultID", [hasRole([])], manageRequest(vaultResource.getVaultById));
-vaultRouter.patch("/:vaultID", [hasRole([])], manageRequest(vaultResource.updateVault));
-vaultRouter.post("/:vaultID/transactions", [hasRole([])], manageRequest(vaultResource.processTransaction));
+vaultRouter.post("/", manageRequest(vaultResource.createVault));
+vaultRouter.get("/", manageRequest(vaultResource.getVaults));
+vaultRouter.get("/:vaultID", manageRequest(vaultResource.getVaultById));
+vaultRouter.patch("/:vaultID", manageRequest(vaultResource.updateVault));
+vaultRouter.post("/:vaultID/transactions", manageRequest(vaultResource.processTransaction));
 
 export default vaultRouter;

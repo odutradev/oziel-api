@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import usersResource from "@resources/users/users.resource";
 import manageRequest from "@middlewares/manageRequest";
+import { ROLES } from "@utils/types/models/user";
 import hasRole from "@middlewares/hasRole";
 import upload from "@middlewares/upload";
 import auth from "@middlewares/auth";
@@ -19,9 +20,9 @@ usersRouter.patch("/me/profile", [auth], manageRequest(usersResource.updateProfi
 usersRouter.patch("/me/profile/avatar", [auth, upload.single("image")], manageRequest(usersResource.updateProfileImage, { upload: true }));
 usersRouter.get("/me/details", [auth], manageRequest(usersResource.getUser));
 
-usersRouter.get("/", [auth, hasRole([])], manageRequest(usersResource.getAllUsers));
-usersRouter.get("/:userID", [auth, hasRole([])], manageRequest(usersResource.getUserById));
-usersRouter.patch("/:userID", [auth, hasRole([])], manageRequest(usersResource.updateUserById));
-usersRouter.delete("/:userID", [auth, hasRole([])], manageRequest(usersResource.deleteUserById));
+usersRouter.get("/", [auth, hasRole([ROLES.DIRETOR_ADMINISTRATIVO_RH])], manageRequest(usersResource.getAllUsers));
+usersRouter.get("/:userID", [auth, hasRole([ROLES.DIRETOR_ADMINISTRATIVO_RH])], manageRequest(usersResource.getUserById));
+usersRouter.patch("/:userID", [auth, hasRole([ROLES.DIRETOR_ADMINISTRATIVO_RH])], manageRequest(usersResource.updateUserById));
+usersRouter.delete("/:userID", [auth, hasRole([ROLES.DIRETOR_ADMINISTRATIVO_RH])], manageRequest(usersResource.deleteUserById));
 
 export default usersRouter;

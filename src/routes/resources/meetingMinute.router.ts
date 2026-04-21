@@ -1,15 +1,14 @@
-import { Router } from "express"
+import { Router } from "express";
 
-import meetingMinuteResource from "@resources/secretary/meetingMinute.resource"
-import manageRequest from "@middlewares/manageRequest"
-import hasRole from "@middlewares/hasRole"
+import meetingMinuteResource from "@resources/secretary/meetingMinute.resource";
+import manageRequest from "@middlewares/manageRequest";
 
-const meetingMinuteRouter = Router()
+const meetingMinuteRouter = Router();
 
-meetingMinuteRouter.get("/", [hasRole([])], manageRequest(meetingMinuteResource.getAllMinutes))
-meetingMinuteRouter.get("/:id", [hasRole([])], manageRequest(meetingMinuteResource.getMinuteById))
-meetingMinuteRouter.post("/", [hasRole([])], manageRequest(meetingMinuteResource.createMinute))
-meetingMinuteRouter.patch("/:id", [hasRole([])], manageRequest(meetingMinuteResource.updateMinute))
-meetingMinuteRouter.delete("/:id", [hasRole([])], manageRequest(meetingMinuteResource.deleteMinute))
+meetingMinuteRouter.get("/", manageRequest(meetingMinuteResource.getAllMinutes));
+meetingMinuteRouter.get("/:id", manageRequest(meetingMinuteResource.getMinuteById));
+meetingMinuteRouter.post("/", manageRequest(meetingMinuteResource.createMinute));
+meetingMinuteRouter.patch("/:id", manageRequest(meetingMinuteResource.updateMinute));
+meetingMinuteRouter.delete("/:id", manageRequest(meetingMinuteResource.deleteMinute));
 
-export default meetingMinuteRouter
+export default meetingMinuteRouter;
